@@ -1,0 +1,15 @@
+This plugin will replace standard image plugin once it is inluded on the page.
+
+Use it as follow:
+
+<script src="/scripts/cleditor/jquery.cleditor.min.js" type="text/javascript"></script>
+<script src="/scripts/cleditor/jquery.cleditor.extimage.js" type="text/javascript"></script>
+<script type="text/javascript">
+$.cleditor.buttons.image.uploadUrl = '/your/custom/upload/path';
+</script>
+
+Your custom upload handler must return only one row in response:
+
+<div id="image">/path/to/uploaded/file</div>
+
+If this markup is not found or path is empty an error will be thrown.
