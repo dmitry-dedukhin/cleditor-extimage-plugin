@@ -9,6 +9,20 @@
 
 (function($) {
 	var hidden_frame_name = '__upload_iframe';
+	
+	var popupHTML = 
+			'<iframe style="width:0;height:0;border:0;" name="' + hidden_frame_name + '" />' +
+			'<table cellpadding="0" cellspacing="0">' +
+			'<tr><td>Choose a File:</td></tr>' +
+			'<tr><td> ' +
+			'<form method="post" enctype="multipart/form-data" action="" target="' + hidden_frame_name + '">' +
+			'<input id="imageName" name="imageName" type="file"></form> </td></tr>' +
+			'<tr><td>Or enter URL:</td></tr>' +
+			'<tr><td><input type="text" size="40" value=""></td></tr>' +
+			'<tr><td><input type="button" value="Submit"></td></tr>' +
+			'</table>' +
+			'<div id="ajaxImageContainer"></div>';
+	
 	// Define the image button by replacing the standard one
 	$.cleditor.buttons.image = {
 		name: 'image',
@@ -17,18 +31,9 @@
 		popupName: 'image',
 		popupClass: 'cleditorPrompt',
 		stripIndex: $.cleditor.buttons.image.stripIndex,
-		popupContent:
-			'<iframe style="width:0;height:0;border:0;" name="' + hidden_frame_name + '" />' +
-			'<table cellpadding="0" cellspacing="0">' +
-			'<tr><td>Choose a File:</td></tr>' +
-			'<tr><td> ' +
-			'<form method="post" enctype="multipart/form-data" action="" target="' + hidden_frame_name + '">' +
-			'<input id="imageName" name="imageName" type="file" /></form> </td></tr>' +
-			'<tr><td>Or enter URL:</td></tr>' +
-			'<tr><td><input type="text" size="40" value="" /></td></tr>' +
-			'</table><input type="button" value="Submit">',
+		popupContent: popupHTML,
 		buttonClick: imageButtonClick,
-		uploadUrl: '/uploadImage' // default url
+		uploadUrl: '/cleditor_image.php' // default url
 	};
 
 	function closePopup(editor) {
@@ -41,14 +46,15 @@
 			$text = $(data.popup).find(':text'),
 			url = $.trim($text.val()),
 			$iframe = $(data.popup).find('iframe'),
-			$file = $(data.popup).find(':file');
+			$file = $(data.popup).find(':file'),
+			$ajaxFiles = $(data.popup).find('#ajaxImageContainer');
 
 		// clear previously selected file and url
 		$file.val('');
 		$text.val('').focus();
 
 		$(data.popup)
-			.children(":button")
+			.find(":button")
 			.unbind("click")
 			.bind("click", function(e) {
 				if($file.val()) { // proceed if any file was selected
