@@ -30,14 +30,17 @@ Make sure the uploads directory is writable.
 
 Include the cleditor-extimage plugin after the cleditor package in your HTML, I.E.
 
+```
 <script src="/js/jquery.cleditor.min.js" type="text/javascript"></script>
 <script src="/js/jquery.cleditor.extimage.js" type="text/javascript"></script>
+```
 
 The default uploadUrl setting assumes the cleditor_image.php processing script will
 run from the root path of your web site. If your processing script is located in
 a subdirectory then you may need to use a custom setting, I.E.
 
+```
 <script type="text/javascript">
 $.cleditor.buttons.image.uploadUrl = 'http://mydomain.com/myblog/cleditor_image.php';
 </script>
-
+```
