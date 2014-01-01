@@ -59,15 +59,27 @@
 			.bind("click", function(e) {
 				if($file.val()) { // proceed if any file was selected
 					$iframe.bind('load', function() {
-						var file_url;
+						var file_url, error_message;
+						
+						// check for error message
+						try {
+							error_message = $iframe.get(0).contentWindow.document.getElementById('error').innerHTML;
+						} catch(e) {};
+						if(error_message) {
+							alert(error_message);
+						}
+						
+						// check for image URL
 						try {
 							file_url = $iframe.get(0).contentWindow.document.getElementById('image').innerHTML;
 						} catch(e) {};
 						if(file_url) {
 							editor.execCommand(data.command, file_url, null, data.button);
 						} else {
-							alert('An error occured during upload!');
+							// show default error if no error message was provided
+							if (!error_message) alert('An error occured during upload!');
 						}
+						
 						$iframe.unbind('load');
 						closePopup(editor);
 					});
