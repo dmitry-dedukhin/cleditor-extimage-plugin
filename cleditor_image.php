@@ -1,5 +1,6 @@
 <?php
-include 'config.php';
+// include existing application configuration file
+//include 'config.php';
 
 // define constants if not yet provided
 if (!defined('SITE_URL')) {
@@ -39,7 +40,8 @@ if (empty($errorMessage) && $_FILES["imageName"]["error"] > 0) {
 
 // validate file already exists
 if (empty($errorMessage) && file_exists(UPLOADS_PATH . '/' . $_FILES['imageName']['name'])) {
-	$errorMessage = "File already exists in uploads directory!";
+	$errorMessage = "File already exists in uploads directory! Using the existing file.";
+	$imageURL = SITE_URL . '/uploads/' . $_FILES['imageName']['name'];
 }
 
 // attempt file move if no errors at this point
@@ -48,16 +50,19 @@ if (empty($errorMessage)) {
 		$errorMessage = "Failed to move temporary file! Check directory permissions.";
 	}
 	else {
-		// build image URL and ensure a scheme or // is provided
 		$imageURL = SITE_URL . '/uploads/' . $_FILES['imageName']['name'];
-		if (!preg_match('#^http[s]?:|^//#', $imageURL)) {
-			// no schema, add default schema
-			$imageURL = '//' . $imageURL;
-		}
-		
-		// return URL to the uploaded image
-		echo '<div id="image">' . $imageURL . '</div>';
 	}
+}
+
+// return image URL if set
+if (!empty($imageURL)) {
+	// make sure image URL has some type of schema
+	if (!preg_match('#^http[s]?:|^//#', $imageURL)) {
+		// no schema, add default schema
+		$imageURL = '//' . $imageURL;
+	}
+	
+	echo '<div id="image">' . $imageURL . '</div>';
 }
 
 // return any active error message
