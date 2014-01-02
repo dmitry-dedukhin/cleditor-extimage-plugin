@@ -99,8 +99,13 @@ if (isset($_GET['list'])) {
 	}
 	
 	usort($list, 'compareFilenames');
+	$list = array_slice($list, $_GET['offset']);
+	if (count($list) > 5) $more = 5 + $_GET['offset'];
+	else $more = 0;
+	$list = array_slice($list, 0, 5);
 	
 	$json['list'] = $list;
+	$json['more'] = $more;
 	
 	// make sure json is not cached
 	header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1

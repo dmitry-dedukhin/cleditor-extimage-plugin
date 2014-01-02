@@ -21,7 +21,7 @@
 			'<tr><td><input type="text" size="40" value=""></td></tr>' +
 			'<tr><td><input type="button" value="Submit"></td></tr>' +
 			'</table>' +
-			'<div id="ajaxImageContainer"></div>';
+			'<div id="ajaxImageContainer" style="overflow: auto; border: 1px solid black; background-color: white; margin-top: 10px;"></div>';
 	
 	var imageHTML =
 			'<div class="select_container" style="border: 1px solid black; margin:2px; float: left; text-align: center; position: relative; width: 62px; height: 84px;">' +
@@ -36,6 +36,12 @@
 			'<span style="background-color: red; padding: 2px; color: white;">X</span>' +
 			'</div>' +
 			'</div>';
+	
+	var moreHTML =
+			'<br>' +
+			'<span class="more_span" style="background-color: blue; padding: 2px; margin: 2px; color: white; float: left; clear: left;">' +
+			'<a style="color: white;">MORE</a>' +
+			'</span>';
 	
 	// Define the image button by replacing the standard one
 	$.cleditor.buttons.image = {
@@ -56,26 +62,44 @@
 	}
 
 	function ajaxLoadImages($ajaxContainer, offset) {
+		if (typeof(offset) == 'undefined') offset = 0;
+		
 		// get image list
 		$.ajax({
 			url: $.cleditor.buttons.image.uploadUrl,
 			data: {
-				list: 1
+				list: 1,
+				offset: offset
 			},
 			dataType: "json",
 			success: function (data, status) {
 				if (data.list) {
+					$ajaxContainer.find('.more_span').remove();
+					
 					for (var listIndex = 0; listIndex < data.list.length; listIndex++) {
 						var newHTML = imageHTML;
 						newHTML = newHTML.replace(/\[url\]/, data.list[listIndex].url);
 						$ajaxContainer.append(newHTML);
-						$ajaxContainer.find('a.new.use')
-							.removeClass('new')
-							.click(function() {
-								var imageURL = $(this).parents('.select_container:first').find('.select_image').attr('src');
-								$ajaxContainer.parents('.cleditorPopup:first').find(':text').val(imageURL);
-							})
 					}
+					
+					// add click event to new use buttons
+					$ajaxContainer.find('a.new.use')
+						.removeClass('new')
+						.click(function() {
+							var imageURL = $(this).parents('.select_container:first').find('.select_image').attr('src');
+							$ajaxContainer.parents('.cleditorPopup:first').find(':text').val(imageURL);
+						})
+							
+					if (data.more) {
+						$ajaxContainer.append(moreHTML);
+						$ajaxContainer.find('.more_span > a').click(function() {
+							// get image list
+							ajaxLoadImages($ajaxContainer, data.more);
+					//		alert($(this).parents('.more_span:first').html())
+					//		$(this).parents('.more_span:first').remove();
+						});
+					}
+					//}
 				}
 			},
 			error: function (data, status, e) {
@@ -88,7 +112,6 @@
 	function imageButtonClick(e, data) {
 		var editor = data.editor,
 			$text = $(data.popup).find(':text'),
-//			url = $.trim($text.val()),
 			$iframe = $(data.popup).find('iframe'),
 			$file = $(data.popup).find(':file'),
 			$ajaxFiles = $(data.popup).find('#ajaxImageContainer');
@@ -96,6 +119,7 @@
 		// clear previously selected file and url
 		$file.val('');
 		$text.val('').focus();
+		$ajaxFiles.html('');
 
 		// get image list
 		ajaxLoadImages($ajaxFiles, 0);
