@@ -33,7 +33,9 @@
 			'<a class="new use" style="color: white;">Use</a>' +
 			'</span>' +
 			' or ' +
-			'<span style="background-color: red; padding: 2px; color: white;">X</span>' +
+			'<span style="background-color: red; padding: 2px; color: white;">' +
+			'<a class="new delete" style="color: white;">X</a>' +
+			'</span>' +
 			'</div>' +
 			'</div>';
 	
@@ -61,6 +63,19 @@
 		editor.focus();
 	}
 
+	function ajaxDeleteImage($selectContainer, imageURL) {
+		$.ajax({
+			url: $.cleditor.buttons.image.uploadUrl,
+			data: {
+				delete: 1,
+				url: imageURL
+			},
+			success: function(data, status) {
+				$selectContainer.remove();
+			}
+		});
+	}
+	
 	function ajaxLoadImages($ajaxContainer, offset) {
 		if (typeof(offset) == 'undefined') offset = 0;
 		
@@ -88,18 +103,27 @@
 						.click(function() {
 							var imageURL = $(this).parents('.select_container:first').find('.select_image').attr('src');
 							$ajaxContainer.parents('.cleditorPopup:first').find(':text').val(imageURL);
-						})
-							
+						});
+						
+					// add click event to delete buttons
+					$ajaxContainer.find('a.new.delete')
+						.removeClass('new')
+						.click(function() {
+							if (confirm('Delete this image?')) {
+								var imageURL = $(this).parents('.select_container:first').find('.select_image').attr('src');
+								ajaxDeleteImage($(this).parents('.select_container:first'), imageURL);
+								//$(this).parents('.select_container:first').remove();
+							}
+						});
+					
+					// display more button if there are more images available
 					if (data.more) {
 						$ajaxContainer.append(moreHTML);
 						$ajaxContainer.find('.more_span > a').click(function() {
 							// get image list
 							ajaxLoadImages($ajaxContainer, data.more);
-					//		alert($(this).parents('.more_span:first').html())
-					//		$(this).parents('.more_span:first').remove();
 						});
 					}
-					//}
 				}
 			},
 			error: function (data, status, e) {

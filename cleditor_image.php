@@ -85,6 +85,17 @@ if (isset($_FILES['imageName'])) {
 }
 
 
+// delete image based on image URL
+if (isset($_GET['delete'])) {
+	$filename = pathinfo(parse_url($_GET['url'], PHP_URL_PATH), PATHINFO_BASENAME);
+	echo UPLOADS_PATH . '/' . $filename;
+	if (file_exists(UPLOADS_PATH . '/' . $filename)) {
+		unlink(UPLOADS_PATH . '/' . $filename);
+	}
+	exit;
+}
+
+
 // get image file list if get is set
 if (isset($_GET['list'])) {
 	$list = array();
