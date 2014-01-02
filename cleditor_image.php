@@ -1,12 +1,35 @@
 <?php
-// include existing application configuration file
-//include 'config.php';
+/*
+* Copyright (C) 2014 Bryan Nielsen - All Rights Reserved
+*
+* Author: Bryan Nielsen (bnielsen1965@gmail.com)
+*
+*
+* This file is an image upload, delete, and list script to support the
+* cleditor-extimage-plugin with updated features.
+* This script is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This supporting script is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with cryptUser.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 // WARNING: This script is accessible by anyone. Protect the script by placing it
 // in a protected directory with limited access or add your own custom administrator 
 // authorization code to restrict access to the functions in this script.
  
+
+// include existing application configuration file
+//include 'config.php';
+
 
 // define constants if not yet provided
 if (!defined('SITE_URL')) {
