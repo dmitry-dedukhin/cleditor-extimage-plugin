@@ -14,6 +14,10 @@ The plugin requires the [CLEditor WYSIWYG HTML editor](http://premiumsoftware.ne
 
 The server must be running PHP version 5.3+
 
+**WARNING:** The cleditor_image.php script does not include any inherent administrator
+authorization code. When implementing this plugin you should locate the script in a secured
+directory or add some custom code to the PHP script to restrict access to authorized users.
+
 ---------------------------------
 
 
