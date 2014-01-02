@@ -12,7 +12,7 @@
 	
 	var popupHTML = 
 			'<iframe style="width:0;height:0;border:0;" name="' + hidden_frame_name + '" />' +
-			'<table cellpadding="0" cellspacing="0">' +
+			'<table cellpadding="0" cellspacing="0" id="image_upload_form">' +
 			'<tr><td>Choose a File:</td></tr>' +
 			'<tr><td> ' +
 			'<form method="post" enctype="multipart/form-data" action="" target="' + hidden_frame_name + '">' +
@@ -22,6 +22,20 @@
 			'<tr><td><input type="button" value="Submit"></td></tr>' +
 			'</table>' +
 			'<div id="ajaxImageContainer"></div>';
+	
+	var imageHTML =
+			'<div class="select_container" style="border: 1px solid black; margin:2px; float: left; text-align: center; position: relative; width: 62px; height: 84px;">' +
+			'<div style="float: left; width: 60px; height: 60px;">' +
+			'<img src="[url]" class="select_image" style="width: auto; height: auto; max-width: 100%; max-height: 100%;">' +
+			'</div>' +
+			'<div style="position: absolute; width: 100%; bottom: 2px; font-size: 12px;">' +
+			'<span style="background-color: green; padding: 2px; color: white;">' +
+			'<a class="new use" style="color: white;">Use</a>' +
+			'</span>' +
+			' or ' +
+			'<span style="background-color: red; padding: 2px; color: white;">X</span>' +
+			'</div>' +
+			'</div>';
 	
 	// Define the image button by replacing the standard one
 	$.cleditor.buttons.image = {
@@ -41,10 +55,40 @@
 		editor.focus();
 	}
 
+	function ajaxLoadImages($ajaxContainer, offset) {
+		// get image list
+		$.ajax({
+			url: $.cleditor.buttons.image.uploadUrl,
+			data: {
+				list: 1
+			},
+			dataType: "json",
+			success: function (data, status) {
+				if (data.list) {
+					for (var listIndex = 0; listIndex < data.list.length; listIndex++) {
+						var newHTML = imageHTML;
+						newHTML = newHTML.replace(/\[url\]/, data.list[listIndex].url);
+						$ajaxContainer.append(newHTML);
+						$ajaxContainer.find('a.new.use')
+							.removeClass('new')
+							.click(function() {
+								var imageURL = $(this).parents('.select_container:first').find('.select_image').attr('src');
+								$ajaxContainer.parents('.cleditorPopup:first').find(':text').val(imageURL);
+							})
+					}
+				}
+			},
+			error: function (data, status, e) {
+
+			}
+		});
+		
+	}
+	
 	function imageButtonClick(e, data) {
 		var editor = data.editor,
 			$text = $(data.popup).find(':text'),
-			url = $.trim($text.val()),
+//			url = $.trim($text.val()),
 			$iframe = $(data.popup).find('iframe'),
 			$file = $(data.popup).find(':file'),
 			$ajaxFiles = $(data.popup).find('#ajaxImageContainer');
@@ -53,10 +97,15 @@
 		$file.val('');
 		$text.val('').focus();
 
+		// get image list
+		ajaxLoadImages($ajaxFiles, 0);
+
 		$(data.popup)
 			.find(":button")
 			.unbind("click")
 			.bind("click", function(e) {
+				url = $.trim($text.val());
+		
 				if($file.val()) { // proceed if any file was selected
 					$iframe.bind('load', function() {
 						var file_url, error_message;
